@@ -6,3 +6,4 @@ soundboard
 # General ignores
 sounds/
 gui.*
+compile_commands.json

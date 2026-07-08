@@ -1,2 +1,0 @@
-CompileFlags:
-  Add: [-std=c++20, -I/home/Guest/files/Projects/cpp/midi-input-handler/imgui, -I/home/Guest/files/Projects/cpp/midi-input-handler/imgui/backends/]
