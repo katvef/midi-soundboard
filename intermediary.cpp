@@ -21,6 +21,66 @@ std::map<std::string, int> SoundBindings;
 ConfigurationVariables* Configs = new ConfigurationVariables();
 // #endif
 
+inline std::string Config::getConfigKey(const std::string& line)
+{
+	size_t start = line.find_first_not_of(" \t");
+	size_t end   = line.find_first_of(" \t=", start);
+	return line.substr(start, end);
+}
+
+inline std::string Config::getConfigValue(const std::string& line)
+{
+	size_t start = line.find_first_not_of(" \t", line.find('=') + 1);
+	size_t end   = line.find_last_not_of(" \t");
+	return line.substr(start, end);
+}
+
+inline bool Config::isCommentOrEmpty(const std::string_view& line)
+{
+	size_t start = line.find_first_not_of(" \t");
+	return start == std::string::npos || line[start] == '#';
+}
+
+void Config::deserialize()
+{
+	std::ifstream C;
+	C.open(ConfigPath);
+	std::string line;
+	while (getline(C, line)) {
+		try {
+			if (!isCommentOrEmpty(line)) {
+				const ConfigKeys key   = c_fromString(getConfigKey(line));
+				std::string      value = getConfigValue(line);
+
+				switch (c_getType(key)) {
+				case STRING:
+					config_keys[key] = value;
+					std::cout << "String\n";
+					break;
+				case INT:
+					config_keys[key] = value.find_first_not_of("1234567890") == std::string::npos ? std::stoi(value) : 0;
+					std::cout << "Int\n";
+					break;
+				}
+			}
+		} catch (const std::string e) {
+			std::cerr << e << '\n' << '\n';
+		}
+	}
+};
+
+Config::ConfigValue Config::getValue(ConfigKeys key)
+{
+	if (key >= ConfigKeys::LENGTH) { throw "Invalid key"; }
+	return config_keys[key];
+}
+
+Config::Config()
+{
+	config_keys.resize(ConfigKeys::LENGTH);
+	deserialize();
+}
+
 void initializeConfigFile()
 {
 	// std::ofstream ConfigFile;
