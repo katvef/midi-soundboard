@@ -1,4 +1,4 @@
-#include "audioloader.h"
+#include "audioloader.hpp"
 #include <filesystem>
 #include <iostream>
 
@@ -10,8 +10,7 @@ std::vector<std::string> getSoundNames()
 {
 	std::vector<std::string> ListOfSounds;
 
-	for (const auto & Entry : std::filesystem::directory_iterator(SoundDirectory))
-	{
+	for (const auto& Entry : std::filesystem::directory_iterator(SoundDirectory)) {
 		// std::cout << Entry.path().filename() << '\n';
 
 		auto pos = ListOfSounds.end();
@@ -25,8 +24,7 @@ std::vector<std::filesystem::path> getSoundPaths()
 {
 	std::vector<std::filesystem::path> ListOfSounds;
 
-	for (const auto & Entry : std::filesystem::directory_iterator(SoundDirectory))
-	{
+	for (const auto& Entry : std::filesystem::directory_iterator(SoundDirectory)) {
 		std::cout << Entry.path().filename() << std::endl;
 
 		auto pos = ListOfSounds.end();
@@ -36,7 +34,4 @@ std::vector<std::filesystem::path> getSoundPaths()
 	return ListOfSounds;
 }
 
-void validateSounds()
-{
-
-}
+void validateSounds() {}

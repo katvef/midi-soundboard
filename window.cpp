@@ -1,12 +1,10 @@
-#include "window.h"
+#include "window.hpp"
 
-extern bool Done;
+extern bool                       Done;
 extern std::map<std::string, int> SoundBindings;
 
 
-void SoundboardGui::Start()
-{
-}
+void SoundboardGui::Start() {}
 
 void SoundboardGui::Update()
 {
@@ -14,9 +12,9 @@ void SoundboardGui::Update()
 	// =============================== Sound Effects Window ================================ //
 	// ===================================================================================== //
 
-	ImVec2 ViewportSize = ImGui::GetMainViewport()->WorkSize;
-	ImVec2 LogBoxSize = ImVec2(0, 150);
-	float ContentRelation = 0.2f;
+	ImVec2 ViewportSize    = ImGui::GetMainViewport()->WorkSize;
+	ImVec2 LogBoxSize      = ImVec2(0, 150);
+	float  ContentRelation = 0.2f;
 
 	ImGuiWindowFlags ToolWindowFlags = 0;
 	ToolWindowFlags |= ImGuiWindowFlags_MenuBar;
@@ -32,10 +30,8 @@ void SoundboardGui::Update()
 		ImGui::Begin("Sound Effects Window", NULL, ToolWindowFlags);
 
 		ImGui::BeginMenuBar();
-		if (ImGui::BeginMenu("Sounds"))
-		{
-			if (ImGui::MenuItem("Import"))
-			{
+		if (ImGui::BeginMenu("Sounds")) {
+			if (ImGui::MenuItem("Import")) {
 				// Import Sound
 				importSound();
 				LoadedSoundEffects = getSoundNames();
@@ -43,16 +39,12 @@ void SoundboardGui::Update()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Devices"))
-		{
+		if (ImGui::BeginMenu("Devices")) {
 			// PossibleOutputs = getOutputDevices();
-			if (ImGui::BeginMenu("Microphone"))
-			{
-				for (int i = 0; i < PossibleOutputs.size(); i++)
-				{
+			if (ImGui::BeginMenu("Microphone")) {
+				for (int i = 0; i < PossibleOutputs.size(); i++) {
 					std::string MicOutName = PossibleOutputs[i] + "##Mic";
-					if (ImGui::MenuItem(MicOutName.c_str()))
-					{
+					if (ImGui::MenuItem(MicOutName.c_str())) {
 						std::cout << "New Microphone Output: " << PossibleOutputs[i].c_str() << '\n';
 						changeConfig("MicrophoneOutput", PossibleOutputs[i].c_str());
 					}
@@ -60,13 +52,10 @@ void SoundboardGui::Update()
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Playback"))
-			{
-				for (int i = 0; i < PossibleOutputs.size(); i++)
-				{
+			if (ImGui::BeginMenu("Playback")) {
+				for (int i = 0; i < PossibleOutputs.size(); i++) {
 					std::string PlaybackName = PossibleOutputs[i] + "##Playback";
-					if (ImGui::MenuItem(PlaybackName.c_str()))
-					{
+					if (ImGui::MenuItem(PlaybackName.c_str())) {
 						std::cout << "New Playback Device: " << PossibleOutputs[i].c_str() << '\n';
 
 						changeConfig("PlaybackOutput", PossibleOutputs[i].c_str());
@@ -75,15 +64,12 @@ void SoundboardGui::Update()
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Midi Port"))
-			{
+			if (ImGui::BeginMenu("Midi Port")) {
 				std::vector<std::string> MidiPorts = getMidiPortNames();
-				for (int i = 0; i < MidiPorts.size(); i++)
-				{
+				for (int i = 0; i < MidiPorts.size(); i++) {
 					std::string PortName = MidiPorts[i];
-					PortName +=  + "##" + std::to_string(i);
-					if (ImGui::MenuItem(PortName.c_str()))
-					{
+					PortName += +"##" + std::to_string(i);
+					if (ImGui::MenuItem(PortName.c_str())) {
 						changeConfig("MidiPort", std::to_string(i));
 						changeConfig("MidiPortName", MidiPorts[i]);
 						std::cout << "New Port Name: " << Configs->MidiPortName << '\n';
@@ -114,9 +100,9 @@ void SoundboardGui::Update()
 		// List of Loaded sound effects.
 		ImGui::TableNextColumn();
 
-		ImU32 HeaderColor = ImGui::GetColorU32(ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-		ImU32 ButtonColor = ImGui::GetColorU32(ImVec4(0.6f, 0.3f, 0.1f, 1.0f));
-		ImU32 ButtonColorHover = ImGui::GetColorU32(ImVec4(0.4f, 0.2f, 0.0f, 1.0f));
+		ImU32 HeaderColor       = ImGui::GetColorU32(ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+		ImU32 ButtonColor       = ImGui::GetColorU32(ImVec4(0.6f, 0.3f, 0.1f, 1.0f));
+		ImU32 ButtonColorHover  = ImGui::GetColorU32(ImVec4(0.4f, 0.2f, 0.0f, 1.0f));
 		ImU32 ButtonColorActive = ImGui::GetColorU32(ImVec4(0.2f, 0.1f, 0.0f, 1.0f));
 
 		// Set Color of the following elements.
@@ -130,12 +116,10 @@ void SoundboardGui::Update()
 		ImGui::Text("Sound Effects");
 
 		ImVec2 CursorPosition = ImVec2(15, 55);
-		int SoundAmount = LoadedSoundEffects.size();
-		for (int i = 0; i < SoundAmount; i++)
-		{
+		int    SoundAmount    = LoadedSoundEffects.size();
+		for (int i = 0; i < SoundAmount; i++) {
 			ImGui::SetCursorPos(CursorPosition);
-			if (ImGui::CollapsingHeader(LoadedSoundEffects[i].c_str()))
-			{
+			if (ImGui::CollapsingHeader(LoadedSoundEffects[i].c_str())) {
 				// On Sound effect Clicked
 				CursorPosition.y += 25;
 				CursorPosition.x += 20;
@@ -143,14 +127,12 @@ void SoundboardGui::Update()
 
 				std::string ButtonName;
 				std::string MidiKey;
-				bool SoundIsBound = SoundBindings.contains(LoadedSoundEffects[i]);
-				if (SoundIsBound)
-					MidiKey = std::to_string(SoundBindings.at(LoadedSoundEffects[i]));
+				bool        SoundIsBound = SoundBindings.contains(LoadedSoundEffects[i]);
+				if (SoundIsBound) { MidiKey = std::to_string(SoundBindings.at(LoadedSoundEffects[i])); }
 				ButtonName = (SoundIsBound) ? "MIDI: [" + MidiKey + "]##" : "[Not Bound]##";
 				ButtonName += std::to_string(i);
 
-				if (ImGui::Button(ButtonName.c_str(), ImVec2(90, 50)))
-				{
+				if (ImGui::Button(ButtonName.c_str(), ImVec2(90, 50))) {
 					// Bind key to sound effect
 					int NewKey = awaitInput();
 					bindSoundToKey(NewKey, LoadedSoundEffects[i]);
@@ -163,13 +145,9 @@ void SoundboardGui::Update()
 				std::string SoundOption1;
 				SoundOption1 = "Remove##";
 				SoundOption1 += std::to_string(i);
-				if (ImGui::Button(SoundOption1.c_str(), ImVec2(80, 20)))
-				{
-
-				}
+				if (ImGui::Button(SoundOption1.c_str(), ImVec2(80, 20))) {}
 				CursorPosition.x -= 120;
 				CursorPosition.y += 20;
-
 			}
 
 			CursorPosition.y += 20;
@@ -177,9 +155,12 @@ void SoundboardGui::Update()
 		}
 
 		// Apply changes to prior elements.
-		ImGui::PopStyleColor(); ImGui::PopStyleColor();
-		ImGui::PopStyleColor(); ImGui::PopStyleColor();
-		ImGui::PopStyleColor(); ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
 
 		ImGui::EndTable();
 		ImGui::End();
@@ -188,7 +169,7 @@ void SoundboardGui::Update()
 	// ===================================================================================== //
 	// ============================== Browser Content Window =============================== //
 	// ===================================================================================== //
-		
+
 	ImGuiWindowFlags MainWindowFlags = 0;
 	MainWindowFlags |= ImGuiWindowFlags_MenuBar;
 	MainWindowFlags |= ImGuiWindowFlags_NoTitleBar;
@@ -203,10 +184,8 @@ void SoundboardGui::Update()
 		ImGui::Begin("Main Window", NULL, MainWindowFlags);
 
 		ImGui::BeginMenuBar();
-		if (ImGui::BeginMenu("Sound Libraries"))
-		{
-			if (ImGui::MenuItem("Add"))
-			{
+		if (ImGui::BeginMenu("Sound Libraries")) {
+			if (ImGui::MenuItem("Add")) {
 				// Add reference directory
 			}
 

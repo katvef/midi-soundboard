@@ -1,12 +1,12 @@
 #pragma once
 
-#include "intermediary.h"
+#include "intermediary.hpp"
 #include "rtmidi/RtMidi.h"
 #include <map>
 
-extern bool Done;
-extern std::map<int, std::string> KeyMap;
-extern struct ConfigurationVariables *Configs;
+extern bool                           Done;
+extern std::map<int, std::string>     KeyMap;
+extern struct ConfigurationVariables* Configs;
 
 // extern RtMidiIn *MidiIn;
 // extern std::vector<unsigned char> Message;

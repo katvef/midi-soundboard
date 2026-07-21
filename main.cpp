@@ -1,13 +1,13 @@
 // #include "soundplayer.h"
-#include "intermediary.h"
+#include "intermediary.hpp"
 // #include "gui.h"
 // #include "main-window.hpp"
-#include "window.h"
-#include "midi-handler.h"
+#include "midi-handler.hpp"
+#include "window.hpp"
 // #include "rtmidi/RtMidi.h"
 
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 #include <map>
 // #include <signal.h>
 // #include <vector>
@@ -22,24 +22,22 @@ extern std::map<int, std::string> KeyMap;
 // const char *SoundEffect;
 // int PortCount;
 
-bool Done;
-static void finish(int ignore)
-{
-	Done = true;
-}
+bool        Done;
+static void finish(int ignore) { Done = true; }
 
 int main()
 {
 	std::cout << "Starting Soundboard...\n";
-	if (initializeApplication() == -1)
-	{
+	if (initializeApplication() == -1) {
 		std::cout << "Soundboard Failed To Find or Create Required Directories!" << '\n';
 		std::cout << "Please Check Application And Directory Priviliges!" << '\n';
-		return -1;	/* In the case that directory for saved data
-					   couldn't be found or created close application. */
+		return -1; /* In the case that directory for saved data
+		           couldn't be found or created close application. */
 	}
 	// std::jthread Window(createWindow);	// Opens a window for the application.
 	std::jthread MidiHandler(startMidiReader);
+
+	auto c = new Config();
 
 	// Start application
 	SoundboardGui GuiWindow;

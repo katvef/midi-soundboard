@@ -1,0 +1,110 @@
+Standard: Latest
+
+AllowShortBlocksOnASingleLine: Always
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortCaseExpressionOnASingleLine: true
+AllowShortEnumsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: true
+AllowShortNamespacesOnASingleLine: true
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowAllArgumentsOnNextLine: false
+
+BinPackArguments: false
+BinPackParameters: false
+PackConstructorInitializers: CurrentLine
+Cpp11BracedListStyle: false
+LambdaBodyIndentation: Signature
+
+UseCRLF: false
+LineEnding: LF
+UseTab: AlignWithSpaces
+ColumnLimit: 120
+IndentWidth: 3
+TabWidth: 3
+
+SpacesInSquareBrackets: false
+SpacesInParentheses: false
+SpacesInCStyleCastParentheses: false
+SpacesInAngles: Never
+SpaceInEmptyParentheses: false
+SpaceInEmptyBlock: false
+SpaceBeforeSquareBrackets: false
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeCaseColon: false
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpacesInLineCommentPrefix:
+  Maximum: -1
+  Minimum: 1
+SpaceBeforeParens: ControlStatementsExceptControlMacros
+
+SortIncludes: CaseSensitive
+CompactNamespaces: true
+AlwaysBreakBeforeMultilineStrings: false
+BreakTemplateDeclarations: true
+BreakConstructorInitializers:  BeforeColon
+BreakInheritanceList: AfterColon
+BreakBeforeConceptDeclarations: Always
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeTernaryOperators: true
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterFunction: true
+  AfterStruct: true
+  AfterCaseLabel: false
+  AfterEnum: false
+  AfterNamespace: true
+  AfterUnion: false
+  AfterExternBlock: true
+  BeforeCatch: false
+  BeforeElse: false
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+  AfterControlStatement: Never
+  IndentBraces: false
+
+ReflowComments: true
+CommentPragmas: '^[!*/]'
+NamespaceIndentation: Inner
+QualifierAlignment: Leave
+DerivePointerAlignment: false
+PointerAlignment: Left
+ReferenceAlignment: Left
+AlignArrayOfStructures: Left
+AlignAfterOpenBracket: Align
+BracedInitializerIndentWidth: 0
+AlignOperands: AlignAfterOperator
+AlignConsecutiveAssignments:  Consecutive
+AlignConsecutiveDeclarations: Consecutive
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: true
+  AlignCaseColons: false
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 2
+
+InsertBraces: true
+MaxEmptyLinesToKeep: 2
+ExperimentalAutoDetectBinPacking: false
+AllowAllConstructorInitializersOnNextLine: true
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+
+
+PenaltyExcessCharacter: 3
+PenaltyReturnTypeOnItsOwnLine: 20
+PenaltyBreakComment: 50
+PenaltyBreakAssignment: 50
+PenaltyBreakBeforeMemberAccess: 200

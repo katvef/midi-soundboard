@@ -1,15 +1,15 @@
 #pragma once
 
-#include "intermediary.h"
+#include "intermediary.hpp"
 
+#include <chrono>
 #include <iostream>
-#include <vector>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <vlc/vlc.h>
 #include <thread>
-#include <chrono>
+#include <unistd.h>
+#include <vector>
+#include <vlc/vlc.h>
 
 // extern std::string MicrophoneOutput;
 // extern std::string PlaybackOutput;
@@ -21,4 +21,4 @@ void prepPlayers();
 
 std::vector<std::string> getOutputDevices();
 
-void playSound(const char *AudioClipPath);
+void playSound(const char* AudioClipPath);

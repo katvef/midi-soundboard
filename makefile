@@ -12,7 +12,7 @@ OBJS = $(addprefix $(BUILD_DIR), $(addsuffix .o, $(basename $(notdir $(SOURCES))
 UNAME_S := $(shell uname -s)
 LINUX_GL_LIBS = -lGL
 
-CXXFLAGS = -std=c++20 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -Irtmidi
+CXXFLAGS = -std=c++23 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -Irtmidi
 CXXFLAGS += -g -Wall -Wformat -D__LINUX_ALSA__ -lasound -lpthread -lvlc
 LIBS =
 

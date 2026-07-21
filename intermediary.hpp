@@ -1,11 +1,13 @@
 #pragma once
 
-#include "soundplayer.h"
-#include <iostream>
+#include "soundplayer.hpp"
 #include <filesystem>
 #include <fstream>
-#include <string>
+#include <iostream>
 #include <map>
+#include <string>
+#include <variant>
+#include <vector>
 
 extern std::string ContentDirectory;
 extern std::string SoundDirectory;
@@ -19,15 +21,15 @@ extern std::string MidiMapPath;
 struct ConfigurationVariables
 {
 	std::string MicrophoneOutput = "";
-	std::string PlaybackOutput = "";
+	std::string PlaybackOutput   = "";
 
 	int MuteSoundboard = -1;
-	int PlayLastSound = -1;
+	int PlayLastSound  = -1;
 
-	int MidiPort = 1;
+	int         MidiPort     = 1;
 	std::string MidiPortName = "";
 };
-extern struct ConfigurationVariables *Configs;
+extern struct ConfigurationVariables* Configs;
 // #endif
 
 // int getOutputDevices();
