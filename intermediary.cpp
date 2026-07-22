@@ -4,7 +4,7 @@
 // #include "audioloader.h"
 // #include "soundplayer.h"
 // #include <filesystem>
-// #include <map>
+#include <map>
 // #include <string>
 
 #define GET_VARIABLE_NAME(Variable) (#Variable)
@@ -30,9 +30,13 @@ inline std::string Config::getConfigKey(const std::string& line)
 
 inline std::string Config::getConfigValue(const std::string& line)
 {
-	size_t start = line.find_first_not_of(" \t", line.find('=') + 1);
-	size_t end   = line.find_last_not_of(" \t");
-	return line.substr(start, end);
+	size_t      start = line.find_first_not_of(" \t", line.find('=') + 1);
+	size_t      end   = line.find_last_not_of(" \t");
+	std::string value = line.substr(start, end);
+	if (value.starts_with('"')) { value.erase(0, 1); }
+	if (value.ends_with('"')) { value.erase(value.length() - 1); }
+
+	return value;
 }
 
 inline bool Config::isCommentOrEmpty(const std::string_view& line)
@@ -43,31 +47,31 @@ inline bool Config::isCommentOrEmpty(const std::string_view& line)
 
 void Config::deserialize()
 {
-	std::ifstream C;
-	C.open(ConfigPath);
+	std::ifstream file;
+	file.open(ConfigPath);
 	std::string line;
-	while (getline(C, line)) {
+	std::cout << "serializing\n";
+	while (getline(file, line)) {
 		try {
 			if (!isCommentOrEmpty(line)) {
-				const ConfigKeys key   = c_fromString(getConfigKey(line));
+				const ConfigKeys key   = keyFromString(getConfigKey(line));
 				std::string      value = getConfigValue(line);
-
-				switch (c_getType(key)) {
-				case STRING:
-					config_keys[key] = value;
-					std::cout << "String\n";
-					break;
-				case INT:
-					config_keys[key] = value.find_first_not_of("1234567890") == std::string::npos ? std::stoi(value) : 0;
-					std::cout << "Int\n";
-					break;
-				}
+				config_keys[key]       = value;
 			}
 		} catch (const std::string e) {
-			std::cerr << e << '\n' << '\n';
+			std::cerr << e << '\n';
 		}
 	}
 };
+
+void Config::serialize()
+{
+	std::ofstream file;
+	file.open(ConfigPath);
+	for (int i = 0; i < LENGTH; i++) {
+		file << keyToString(static_cast<ConfigKeys>(i)) << " = \"" << config_keys[i] << "\"\n";
+	}
+}
 
 Config::ConfigValue Config::getValue(ConfigKeys key)
 {
@@ -75,10 +79,10 @@ Config::ConfigValue Config::getValue(ConfigKeys key)
 	return config_keys[key];
 }
 
-Config::Config()
+Config::Config() : config_keys(LENGTH, "")
 {
-	config_keys.resize(ConfigKeys::LENGTH);
 	deserialize();
+	serialize();
 }
 
 void initializeConfigFile()
