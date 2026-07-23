@@ -72,18 +72,18 @@ void Config::deserialize()
 void Config::serialize()
 {
 	std::ifstream            ifile(ConfigPath);
-	std::string              line;
-	std::vector<std::string> lines;
-	std::array<int, LENGTH>  locs;
-	locs.fill(-1);
-	lines.reserve(20); // Sensible default length for config file
-	int i = 0;
+	std::vector<std::string> lines; // Existing lines in config
+	std::array<int, LENGTH>  locs;  // Locations of config keys
+	locs.fill(-1);                  // Use -1 as value for not found keys
+	lines.reserve(20);              // Sensible default length for config file
+
+	std::string line;
+	int         i = 0;
 	while (getline(ifile, line)) {
 		lines.push_back(line);
 		try {
 			if (!isCommentOrEmpty(line)) {
-				const ConfigKeys key = keyFromString(getConfigKey(line));
-				locs[key]            = i;
+				locs[keyFromString(getConfigKey(line))] = i;
 			}
 		} catch (const std::string e) {
 			std::cerr << e << '\n';
