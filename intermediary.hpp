@@ -47,7 +47,11 @@ class Config
 	inline bool        isCommentOrEmpty(const std::string_view& line);
 
  protected:
-	Config() {}
+	Config()
+	{
+		config_keys[MidiPort] = "0";
+		config_keys[MidiPortName] = "null";
+	}
 	Config(const Config&)            = delete;
 	Config& operator=(const Config&) = delete;
 
@@ -65,7 +69,7 @@ class Config
 		case MidiPort:         return INT;
 		case LENGTH:           break;
 		}
-		throw "Key not found";
+		throw "Config key not found";
 	}
 
 	static inline constexpr std::string keyToString(ConfigKeys key)
@@ -79,7 +83,7 @@ class Config
 		case MidiPort:         return "MidiPort";
 		case LENGTH:           break;
 		}
-		throw "Key not found";
+		throw "Config key not found";
 	}
 
 	static inline constexpr ConfigKeys keyFromString(std::string key)

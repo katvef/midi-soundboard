@@ -60,7 +60,6 @@ void Config::deserialize()
 			std::cerr << e << '\n';
 		}
 	}
-	file.close();
 };
 
 void Config::serialize()
@@ -82,7 +81,6 @@ void Config::serialize()
 		}
 		i++;
 	}
-	ifile.close();
 
 	std::ofstream ofile(ConfigPath);
 	for (int i = 0; i < LENGTH; i++) {
@@ -94,7 +92,6 @@ void Config::serialize()
 		}
 	}
 	for (auto& line : lines) { ofile << line << '\n'; }
-	ofile.close();
 }
 
 Config::ConfigValue Config::getValue(ConfigKeys key)
