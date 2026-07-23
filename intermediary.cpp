@@ -4,6 +4,7 @@
 // #include "audioloader.h"
 // #include "soundplayer.h"
 // #include <filesystem>
+#include <format>
 #include <map>
 // #include <string>
 
@@ -33,8 +34,12 @@ inline std::string Config::getConfigValue(const std::string& line)
 	size_t      start = line.find_first_not_of(" \t", line.find('=') + 1);
 	size_t      end   = line.find_last_not_of(" \t");
 	std::string value = line.substr(start, end);
-	if (value.starts_with('"')) { value.erase(0, 1); }
-	if (value.ends_with('"')) { value.erase(value.length() - 1); }
+	if (value.starts_with('"')) {
+		value.erase(0, 1);
+	}
+	if (value.ends_with('"')) {
+		value.erase(value.length() - 1);
+	}
 
 	return value;
 }
@@ -54,28 +59,59 @@ void Config::deserialize()
 	while (getline(file, line)) {
 		try {
 			if (!isCommentOrEmpty(line)) {
-				const ConfigKeys key   = keyFromString(getConfigKey(line));
-				std::string      value = getConfigValue(line);
-				config_keys[key]       = value;
+				const ConfigKeys key = keyFromString(getConfigKey(line));
+				config_keys[key]     = getConfigValue(line);
 			}
 		} catch (const std::string e) {
 			std::cerr << e << '\n';
 		}
 	}
+	file.close();
 };
 
 void Config::serialize()
 {
-	std::ofstream file;
-	file.open(ConfigPath);
-	for (int i = 0; i < LENGTH; i++) {
-		file << keyToString(static_cast<ConfigKeys>(i)) << " = \"" << config_keys[i] << "\"\n";
+	std::ifstream            ifile(ConfigPath);
+	std::string              line;
+	std::vector<std::string> lines;
+	std::array<int, LENGTH>  locs;
+	locs.fill(-1);
+	lines.reserve(20); // Sensible default length for config file
+	int i = 0;
+	while (getline(ifile, line)) {
+		lines.push_back(line);
+		try {
+			if (!isCommentOrEmpty(line)) {
+				const ConfigKeys key = keyFromString(getConfigKey(line));
+				locs[key]            = i;
+			}
+		} catch (const std::string e) {
+			std::cerr << e << '\n';
+		}
+		i++;
 	}
+	ifile.close();
+
+	std::ofstream ofile(ConfigPath);
+	for (int i = 0; i < LENGTH; i++) {
+		int index = locs[i];
+		if (index != -1) {
+			lines[index] = std::format("{} = \"{}\"", keyToString(static_cast<ConfigKeys>(i)), config_keys[i]);
+		} else {
+			lines.push_back(std::format("{} = \"{}\"", keyToString(static_cast<ConfigKeys>(i)), config_keys[i]));
+		}
+	}
+	for (auto& line : lines) {
+		ofile << line << '\n';
+	}
+	ofile.close();
 }
 
 Config::ConfigValue Config::getValue(ConfigKeys key)
 {
-	if (key >= ConfigKeys::LENGTH) { throw "Invalid key"; }
+	if (key >= ConfigKeys::LENGTH) {
+		throw "Invalid key";
+	}
 	return config_keys[key];
 }
 
@@ -90,7 +126,9 @@ void initializeConfigFile()
 	// std::ofstream ConfigFile;
 	ConfigFile.open(ConfigPath);
 
-	if (!ConfigFile.is_open()) { return; }
+	if (!ConfigFile.is_open()) {
+		return;
+	}
 
 	ConfigFile << "# Audio configuration" << '\n';
 	ConfigFile << "MicrophoneOutput = \"\"" << '\n';
@@ -159,7 +197,9 @@ int changeConfig(std::string ValueToChange, std::string NewValue)
 
 	ConfigFile.open(ConfigPath);
 
-	if (!ConfigFile.is_open()) { return -1; }
+	if (!ConfigFile.is_open()) {
+		return -1;
+	}
 
 	for (int i = 0; i < FileLines.size(); i++) {
 		if (i == VariableLinePos && VariableLinePos != -1) {
@@ -176,10 +216,18 @@ int changeConfig(std::string ValueToChange, std::string NewValue)
 	ConfigFile.close();
 
 
-	if (ValueToChange == "MicrophoneOutput") { Configs->MicrophoneOutput = NewValue; }
-	if (ValueToChange == "PlaybackOutput") { Configs->PlaybackOutput = NewValue; }
-	if (ValueToChange == "MidiPortName") { Configs->MidiPortName = NewValue; }
-	if (ValueToChange == "MidiPort") { Configs->MidiPort = std::stoi(NewValue); }
+	if (ValueToChange == "MicrophoneOutput") {
+		Configs->MicrophoneOutput = NewValue;
+	}
+	if (ValueToChange == "PlaybackOutput") {
+		Configs->PlaybackOutput = NewValue;
+	}
+	if (ValueToChange == "MidiPortName") {
+		Configs->MidiPortName = NewValue;
+	}
+	if (ValueToChange == "MidiPort") {
+		Configs->MidiPort = std::stoi(NewValue);
+	}
 
 	return 0;
 }
@@ -191,10 +239,16 @@ void loadConfig()
 
 	ConfigFileIn.open(ConfigPath);
 
-	if (!ConfigFileIn.is_open()) { return; }
+	if (!ConfigFileIn.is_open()) {
+		return;
+	}
 	while (std::getline(ConfigFileIn, Line)) {
-		if (Line.size() == 0) { continue; }
-		if (Line.at(0) == '#') { continue; }
+		if (Line.size() == 0) {
+			continue;
+		}
+		if (Line.at(0) == '#') {
+			continue;
+		}
 
 		// Get Variable name
 		int VarStart  = Line.find_first_not_of(" ");
@@ -210,12 +264,24 @@ void loadConfig()
 		Value          = (Value.at(0) == '\"') ? Value.substr(1, Value.find_last_of('\"') - 1) : Value;
 		// std::cout << Value << "\n";
 
-		if (Variable == "MicrophoneOutput") { Configs->MicrophoneOutput = Value; }
-		if (Variable == "PlaybackOutput") { Configs->PlaybackOutput = Value; }
-		if (Variable == "MuteSoundboard" && Value != "") { Configs->MuteSoundboard = std::stoi(Value); }
-		if (Variable == "PlayLastSound" && Value != "") { Configs->PlayLastSound = std::stoi(Value); }
-		if (Variable == "MidiPort" && Value != "") { Configs->MidiPort = std::stoi(Value); }
-		if (Variable == "MidiPortName") { Configs->MidiPortName = Value.c_str(); }
+		if (Variable == "MicrophoneOutput") {
+			Configs->MicrophoneOutput = Value;
+		}
+		if (Variable == "PlaybackOutput") {
+			Configs->PlaybackOutput = Value;
+		}
+		if (Variable == "MuteSoundboard" && Value != "") {
+			Configs->MuteSoundboard = std::stoi(Value);
+		}
+		if (Variable == "PlayLastSound" && Value != "") {
+			Configs->PlayLastSound = std::stoi(Value);
+		}
+		if (Variable == "MidiPort" && Value != "") {
+			Configs->MidiPort = std::stoi(Value);
+		}
+		if (Variable == "MidiPortName") {
+			Configs->MidiPortName = Value.c_str();
+		}
 	}
 	ConfigFileIn.close();
 }
@@ -228,7 +294,9 @@ void importSound()
 	FILE* File = popen("zenity --file-selection", "r");
 	fgets(FilePath, 1024, File);
 	ImportablePath = FilePath;
-	if (ImportablePath == "") { return; }
+	if (ImportablePath == "") {
+		return;
+	}
 	ImportablePath = ImportablePath.substr(0, ImportablePath.size() - 1);
 
 	std::string FileName = FilePath;
@@ -252,7 +320,9 @@ int addMidimapping(int Key, std::string InMapping)
 	Midimap.open(MidiMapPath, std::ios::app);
 
 	// If file didn't open, exit with errorcode
-	if (!Midimap.is_open()) { return -1; }
+	if (!Midimap.is_open()) {
+		return -1;
+	}
 
 	// Write to file
 	Midimap << '{' << MidiMapping << "},\n";
@@ -275,7 +345,9 @@ void removeKeyFromMap(int KeyToRemove)
 		// int End = Line.find_first_of('}');
 
 		int KeyCode = std::stoi(Line.substr(Start + 1, SecondArg - 1));
-		if (KeyCode != KeyToRemove) { KeepBinds.push_back(Line); }
+		if (KeyCode != KeyToRemove) {
+			KeepBinds.push_back(Line);
+		}
 		// std::string SoundPath = Line.substr(SecondArg + 2, End - SecondArg - 2);
 		// KeyMap.insert({KeyCode, SoundPath});
 
@@ -287,7 +359,9 @@ void removeKeyFromMap(int KeyToRemove)
 	MidimapWrite.open(MidiMapPath);
 
 	// If file didn't open, exit with errorcode
-	if (!MidimapWrite.is_open()) { return; }
+	if (!MidimapWrite.is_open()) {
+		return;
+	}
 
 	for (int i = 0; i < KeepBinds.size(); i++) {
 		// Write to file
@@ -326,7 +400,9 @@ int loadMidimap()
 	Midimap.open(MidiMapPath);
 
 	// If file didn't open, exit with errorcode
-	if (!Midimap.is_open()) { return -1; }
+	if (!Midimap.is_open()) {
+		return -1;
+	}
 
 	while (std::getline(Midimap, Line)) {
 		int Start     = Line.find_first_of('{');
