@@ -31,6 +31,7 @@ struct ConfigurationVariables
 extern struct ConfigurationVariables* Configs;
 // #endif
 
+// Singleton
 class Config
 {
  public:
@@ -39,15 +40,18 @@ class Config
 	typedef std::variant<std::string, int> ConfigValue;
 
  private:
-	std::vector<std::string> config_keys;
+	std::array<std::string, LENGTH> config_keys;
 
 	inline std::string getConfigKey(const std::string& line);
-
 	inline std::string getConfigValue(const std::string& line);
+	inline bool        isCommentOrEmpty(const std::string_view& line);
 
-	inline bool isCommentOrEmpty(const std::string_view& line);
+ protected:
+	Config() {}
+	Config(const Config&)            = delete;
+	Config& operator=(const Config&) = delete;
 
-	void deserialize();
+	static Config* instance;
 
  public:
 	static inline constexpr int keyGetType(ConfigKeys key)
@@ -89,12 +93,14 @@ class Config
 		throw "Invalid config key " + key;
 	}
 
+	static Config* getInstance();
+
 	void serialize();
+	void deserialize();
 
 	ConfigValue getValue(ConfigKeys key);
-
-	Config();
 };
+
 // int getOutputDevices();
 
 int changeConfig(std::string ValueToChange, std::string NewValue);
