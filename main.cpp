@@ -37,7 +37,6 @@ int main()
 	// std::jthread Window(createWindow);	// Opens a window for the application.
 	std::jthread MidiHandler(startMidiReader);
 
-	Config& c = Config::getInstance();
 
 	// Start application
 	SoundboardGui GuiWindow;

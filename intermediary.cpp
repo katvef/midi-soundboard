@@ -51,24 +51,20 @@ void Config::deserialize()
 	std::ifstream file(ConfigPath);
 	std::string   line;
 	while (getline(file, line)) {
-		try {
-			if (!isCommentOrEmpty(line)) {
-				const ConfigKeys key = keyFromString(getConfigKey(line));
-				config_keys[key]     = getConfigValue(line);
-			}
-		} catch (const std::string e) {
-			std::cerr << e << '\n';
+		if (!isCommentOrEmpty(line)) {
+			const ConfigKey key = keyFromString(getConfigKey(line));
+			config_keys[key]    = getConfigValue(line);
 		}
 	}
 };
 
 void Config::serialize()
 {
-	std::ifstream            ifile(ConfigPath);
-	std::vector<std::string> lines; // Existing lines in config
-	std::array<int, LENGTH>  locs;  // Locations of config keys
-	locs.fill(-1);                  // Use -1 as value for not found keys
-	lines.reserve(20);              // Sensible default length for config file
+	std::ifstream               ifile(ConfigPath);
+	std::vector<std::string>    lines; // Existing lines in config
+	std::array<int, LENGTH - 1> locs;  // Locations of config keys
+	locs.fill(-1);                     // Use -1 as value for not found keys
+	lines.reserve(20);                 // Sensible default length for config file
 
 	std::string line;
 	int         i = 0;
@@ -82,22 +78,26 @@ void Config::serialize()
 		i++;
 	}
 
-	std::ofstream ofile(ConfigPath);
-	for (int i = 0; i < LENGTH; i++) {
+	for (int i = 0; i < LENGTH - 1; i++) {
 		int index = locs[i];
 		if (index != -1) {
-			lines[index] = std::format("{} = \"{}\"", keyToString(static_cast<ConfigKeys>(i)), config_keys[i]);
+			lines[index] = std::format("{} = \"{}\"", keyToString(static_cast<ConfigKey>(i)), config_keys[i]);
 		} else {
-			lines.push_back(std::format("{} = \"{}\"", keyToString(static_cast<ConfigKeys>(i)), config_keys[i]));
+			lines.push_back(std::format("{} = \"{}\"", keyToString(static_cast<ConfigKey>(i)), config_keys[i]));
 		}
 	}
+
+	std::ofstream ofile(ConfigPath);
 	for (auto& line : lines) { ofile << line << '\n'; }
 }
 
-Config::ConfigValue Config::getValue(ConfigKeys key)
+Config::ConfigValue Config::getValue(ConfigKey key)
 {
-	if (key >= ConfigKeys::LENGTH) { throw "Invalid key"; }
-	return config_keys[key];
+	if (keyGetType(key) == ConfigType::INT) {
+		return config_keys[key];
+	} else {
+		return std::stoi(config_keys[key]);
+	}
 }
 
 Config* Config::instance = nullptr;

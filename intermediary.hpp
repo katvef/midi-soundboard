@@ -35,8 +35,8 @@ extern struct ConfigurationVariables* Configs;
 class Config
 {
  public:
-	enum ConfigTypes { STRING, INT };
-	enum ConfigKeys { MicrophoneOutput, MuteSoundboard, PlayLastSound, PlaybackOutput, MidiPortName, MidiPort, LENGTH };
+	enum ConfigType { STRING, INT };
+	enum ConfigKey { MicrophoneOutput, MuteSoundboard, PlayLastSound, PlaybackOutput, MidiPortName, MidiPort, LENGTH };
 	typedef std::variant<std::string, int> ConfigValue;
 
  private:
@@ -49,7 +49,7 @@ class Config
  protected:
 	Config()
 	{
-		config_keys[MidiPort] = "0";
+		config_keys[MidiPort]     = "0";
 		config_keys[MidiPortName] = "null";
 	}
 	Config(const Config&)            = delete;
@@ -58,7 +58,7 @@ class Config
 	static Config* instance;
 
  public:
-	static inline constexpr int keyGetType(ConfigKeys key)
+	static inline constexpr int keyGetType(ConfigKey key)
 	{
 		switch (key) {
 		case MicrophoneOutput: return STRING;
@@ -72,7 +72,7 @@ class Config
 		throw "Config key not found";
 	}
 
-	static inline constexpr std::string keyToString(ConfigKeys key)
+	static inline constexpr std::string keyToString(ConfigKey key)
 	{
 		switch (key) {
 		case MicrophoneOutput: return "MicrophoneOutput";
@@ -86,23 +86,24 @@ class Config
 		throw "Config key not found";
 	}
 
-	static inline constexpr ConfigKeys keyFromString(std::string key)
+	static inline constexpr ConfigKey keyFromString(std::string key)
 	{
-		if (key == "MicrophoneOutput") { return ConfigKeys::MicrophoneOutput; }
-		if (key == "PlaybackOutput") { return ConfigKeys::PlaybackOutput; }
-		if (key == "MuteSoundboard") { return ConfigKeys::MuteSoundboard; }
-		if (key == "MidiPortName") { return ConfigKeys::MidiPortName; }
-		if (key == "PlayLastSound") { return ConfigKeys::PlayLastSound; }
-		if (key == "MidiPort") { return ConfigKeys::MidiPort; }
+		if (key == "MicrophoneOutput") { return ConfigKey::MicrophoneOutput; }
+		if (key == "PlaybackOutput") { return ConfigKey::PlaybackOutput; }
+		if (key == "MuteSoundboard") { return ConfigKey::MuteSoundboard; }
+		if (key == "MidiPortName") { return ConfigKey::MidiPortName; }
+		if (key == "PlayLastSound") { return ConfigKey::PlayLastSound; }
+		if (key == "MidiPort") { return ConfigKey::MidiPort; }
 		throw "Invalid config key " + key;
 	}
 
 	static Config* getInstance();
 
+	[[nodiscard]] ConfigValue operator[](ConfigKey k) { return getValue(k); }
+	ConfigValue               getValue(ConfigKey key);
+
 	void serialize();
 	void deserialize();
-
-	ConfigValue getValue(ConfigKeys key);
 };
 
 // int getOutputDevices();
